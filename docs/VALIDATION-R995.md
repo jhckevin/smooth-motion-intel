@@ -17,3 +17,9 @@
 运行时白名单和其源哈希见 native/public-source-files995.json。native/tests 中的原生构建证据来自兼容性子工程；本发行包是从最终仓库重新构建，二进制时间戳/PDB GUID 可能不同，发行校验应使用 Release 中的 SHA256SUMS.txt。
 
 日志/诊断未上传。发行包不含 PDB；维护者另保留与实际发行 EXE 对应的完整符号和源快照。
+
+## 干净 CI 发现的系统加载兼容问题
+
+首轮 Windows Server 2022 CI 编译、桌面与导入测试通过，原生加载报 0xC0000138。定位到可选 scheduled 展示路径静态导入 dcomp.dll 的 2005/1101/1102 三个新 API ordinal。
+
+修复后，这些可选 API 只在选择 scheduled 后端时从 System32 的 dcomp.dll 解析；缺项明确拒绝该后端。默认 DXGI/DComp 和 CPU 自检不再被这些可选依赖阻挡。源码包含缺函数组合的编译期策略检查；CI 通过仍只证明加载及 CPU 检查，不证明 Server 2022 或其他系统上的真实游戏兼容。

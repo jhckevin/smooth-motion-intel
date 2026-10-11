@@ -18,7 +18,7 @@ function Run-OwnCpuTest([string]$File,[string]$Arguments,[string]$Name) {
   [IO.File]::WriteAllText((Join-Path $dir 'stdout.txt'),$out.Result)
   [IO.File]::WriteAllText((Join-Path $dir 'stderr.txt'),$err.Result)
   $code=$child.ExitCode
-  if($code -ne 0){throw ('CPU test failed: '+$Name+', exit '+$code)}
+  if($code -ne 0){$hex=[BitConverter]::ToUInt32([BitConverter]::GetBytes([int]$code),0).ToString('X8');Write-Host $err.Result;throw ('CPU test failed: '+$Name+', exit '+$code+' (0x'+$hex+')')}
   return @{case=$Name;exit_code=$code;elapsed_ms=$timer.Elapsed.TotalMilliseconds}
  } finally { $child.Dispose() }
 }

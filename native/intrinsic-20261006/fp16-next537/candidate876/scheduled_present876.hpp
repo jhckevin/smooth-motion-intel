@@ -6,8 +6,51 @@
 #include <set>
 #include <limits>
 #include <cmath>
+#include <stdexcept>
+#include <string>
+// Optional Composition Swapchain APIs must not become process-load dependencies.
+// SDK 10.0.26100 dcomp.lib specifies these three ordinals; named exports are preferred.
+struct OptionalCompositionApi995 {
+ HMODULE module=nullptr;
+ decltype(&::CreatePresentationFactory) createFactory=nullptr;
+ decltype(&::DCompositionGetStatistics) statistics=nullptr;
+ decltype(&::DCompositionGetTargetStatistics) targetStatistics=nullptr;
+ static constexpr unsigned missingMask(bool factory,bool stats,bool target) noexcept {
+  return (factory?0u:1u)|(stats?0u:2u)|(target?0u:4u);
+ }
+ template<class T>T resolve(const char*name,WORD ordinal){
+  FARPROC p=GetProcAddress(module,name);
+  if(!p)p=GetProcAddress(module,MAKEINTRESOURCEA(ordinal));
+  return reinterpret_cast<T>(p);
+ }
+ OptionalCompositionApi995(){
+  module=LoadLibraryExW(L"dcomp.dll",nullptr,LOAD_LIBRARY_SEARCH_SYSTEM32);
+  if(!module){DWORD error=GetLastError();throw std::runtime_error("Optional scheduled presentation unavailable: system32 dcomp.dll load failed; Win32="+std::to_string(error));}
+  createFactory=resolve<decltype(createFactory)>("CreatePresentationFactory",2005);
+  statistics=resolve<decltype(statistics)>("DCompositionGetStatistics",1101);
+  targetStatistics=resolve<decltype(targetStatistics)>("DCompositionGetTargetStatistics",1102);
+  unsigned missing=missingMask(createFactory!=nullptr,statistics!=nullptr,targetStatistics!=nullptr);
+  if(missing){FreeLibrary(module);module=nullptr;
+   throw std::runtime_error("Optional scheduled presentation unavailable: required dcomp exports missing; mask="+std::to_string(missing)+" (1=CreatePresentationFactory, 2=DCompositionGetStatistics, 4=DCompositionGetTargetStatistics). Use the default DXGI/DComp backend.");}
+ }
+ OptionalCompositionApi995(const OptionalCompositionApi995&)=delete;
+ OptionalCompositionApi995&operator=(const OptionalCompositionApi995&)=delete;
+ ~OptionalCompositionApi995(){if(module)FreeLibrary(module);}
+};
+// CPU compile-time missing-export mocks; all required entries must be available.
+static_assert(OptionalCompositionApi995::missingMask(true,true,true)==0);
+static_assert(OptionalCompositionApi995::missingMask(false,true,true)==1);
+static_assert(OptionalCompositionApi995::missingMask(true,false,true)==2);
+static_assert(OptionalCompositionApi995::missingMask(true,true,false)==4);
+static_assert(OptionalCompositionApi995::missingMask(false,false,true)==3);
+static_assert(OptionalCompositionApi995::missingMask(false,true,false)==5);
+static_assert(OptionalCompositionApi995::missingMask(true,false,false)==6);
+static_assert(OptionalCompositionApi995::missingMask(false,false,false)==7);
+
 // Own-process presentation backend. No global timing, display, VRR, or security changes.
 class ScheduledPresenter871 {
+ // Declared first so the module outlives every COM object and pending buffer.
+ OptionalCompositionApi995 api995_;
  using Texture=winrt::com_ptr<ID3D11Texture2D>;
  struct Handle{HANDLE value=nullptr;~Handle(){if(value)CloseHandle(value);}Handle()=default;Handle(const Handle&)=delete;};
  struct Buffer{Texture texture;winrt::com_ptr<IPresentationBuffer> buffer;std::unique_ptr<Handle> ready;};
@@ -38,7 +81,7 @@ class ScheduledPresenter871 {
  }
  void timingPending(){
   for(auto i=pending_.begin();i!=pending_.end();){
-   COMPOSITION_TARGET_STATS t{};HRESULT hr=DCompositionGetTargetStatistics(i->frame,&i->target,&t);
+   COMPOSITION_TARGET_STATS t{};HRESULT hr=api995_.targetStatistics(i->frame,&i->target,&t);
    if(SUCCEEDED(hr)&&t.presentedStats.presentCount&&t.completedStats.presentCount>=t.presentedStats.presentCount){
     // Preserve raw compositor counts. This is NOT independent per-buffer scanout proof.
     row("composition_timing",i->id,i->frame,t.outstandingPresents,t.completedStats.time,t.presentedStats.presentCount,t.completedStats.presentCount,hr);
@@ -52,7 +95,7 @@ public:
  ScheduledPresenter871(ID3D11Device*d,UINT width,UINT height,UINT count){
   device_.copy_from(d);d->GetImmediateContext(context_.put());
   for(unsigned i=0;i<16;i++){D3D11_QUERY_DESC desc{D3D11_QUERY_EVENT,0};winrt::com_ptr<ID3D11Query> q;winrt::check_hresult(d->CreateQuery(&desc,q.put()));freeQueries876_.push_back(std::move(q));}
-  winrt::check_hresult(CreatePresentationFactory(d,__uuidof(IPresentationFactory),factory_.put_void()));
+  winrt::check_hresult(api995_.createFactory(d,__uuidof(IPresentationFactory),factory_.put_void()));
   if(!factory_->IsPresentationSupported())throw std::runtime_error("Composition presentation unsupported");
   winrt::check_hresult(factory_->CreatePresentationManager(manager_.put()));
   winrt::check_hresult(DCompositionCreateSurfaceHandle(COMPOSITIONOBJECT_ALL_ACCESS,nullptr,&surfaceHandle_.value));
@@ -120,7 +163,7 @@ public:
     if(!seenComposition_.insert({id,frame}).second)continue;
     compositionInstances_+=count;
     COMPOSITION_FRAME_STATS fs{};COMPOSITION_TARGET_ID targets[COMPOSITION_STATS_MAX_TARGETS]{};UINT actual=0;
-    HRESULT hr=DCompositionGetStatistics(frame,&fs,COMPOSITION_STATS_MAX_TARGETS,targets,&actual);
+    HRESULT hr=api995_.statistics(frame,&fs,COMPOSITION_STATS_MAX_TARGETS,targets,&actual);
     row("composition_frame",id,frame,count,fs.targetTime,0,0,hr);
     for(UINT j=0;j<count;j++){
      const auto&v=instances[j];row("composition_instance",id,frame,unsigned(v.instanceKind),0,unsigned(v.requiredCrossAdapterCopy),v.displayVidPnSourceId);
