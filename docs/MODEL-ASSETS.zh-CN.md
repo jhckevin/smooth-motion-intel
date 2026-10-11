@@ -1,15 +1,17 @@
 # 本地模型资产
 
+[English](MODEL-ASSETS.en.md) · 简体中文
+
 公开仓库与 Release 不包含 NVIDIA/LSFG 权重、提取图、第三方私有 shader 二进制或厂商 DLL。assets988.json 是文件路径、长度和 SHA256 清单，不是模型本身，也不是权重使用授权。
 
 ## 导入已有模型包
 若你已合法取得并有权用于本项目的匹配模型包，或者有先前的本地项目目录，可在 PowerShell 执行：
 
 ~~~powershell
-.\tools\import-model.ps1 -Source "D:\MySmoothMotionModel" -Destination ".\dist"
+.\tools\import-model.ps1 -Source "D:\MySmoothMotionModel" -Destination "."
 ~~~
 
-Release 内同样附带 tools/import-model.ps1；Destination 指向 SmoothMotion.exe 所在目录。Source 可指向旧客户端根目录（含 UserData/runtime-work 与 UserData/runtime-shaders），或模型根目录（含 graph922.bin、assets、shaders 等清单文件）。
+以上命令在便携 Release 的解压目录执行；Destination 指向 SmoothMotion.exe 所在目录。若从源码仓库向构建输出导入，则使用 -Destination ".\dist"。Source 可指向旧客户端根目录（含 UserData/runtime-work 与 UserData/runtime-shaders），或模型根目录（含 graph922.bin、assets、shaders 等清单文件）。
 
 导入器仅按当前 manifest 逐文件验证并复制到 Destination/model，不下载、提取或执行厂商 DLL，不改注册表、驱动或全局环境；失败明确报告缺失或哈希不符。使用 -WhatIf 先核查，不写入资产。完整性校验不表示你已取得权利许可。
 

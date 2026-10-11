@@ -1,91 +1,111 @@
 <p align="center"><img src="art/logo.svg" width="900" alt="Smooth Motion Intel — Vulkan / XMX frame generation"></p>
 
-<p align="center">Windows 桌面帧生成 · 为 Intel XMX 优化 · 推荐 Arc B390</p>
+<p align="center"><strong>English</strong> · <a href="README.zh-CN.md">简体中文</a></p>
+<p align="center">Windows desktop frame generation · Optimized for Intel XMX · Arc B390 recommended</p>
 
 # Smooth Motion Intel
 
-面向 Intel GPU 的非官方 Smooth Motion 移植与 Windows 客户端。通过 Vulkan 执行自定义推理，使用 Windows Graphics Capture / DXGI 捕获和 D3D/DXGI 展示。它不使用 XeSS SDK 加载 NVIDIA 模型，也不是 NVIDIA、Intel 或 Lossless Scaling 的官方产品。
+An unofficial Smooth Motion port and Windows desktop client for Intel GPUs. It runs custom inference through Vulkan, captures with Windows Graphics Capture or DXGI Desktop Duplication, and presents through D3D/DXGI. It does not load NVIDIA models through the XeSS SDK and is not an official NVIDIA, Intel, or Lossless Scaling product.
 
-**公开范围：客户端、推理运行时及诊断实现。NVIDIA 模型权重、提取后的计算图、第三方私有着色器和厂商 DLL 不随仓库或 Release 分发。下载开源客户端并不等于取得这些资产的使用或再分发许可。**
+**[Download for Windows x86_64](https://github.com/jhckevin/smooth-motion-intel/releases/tag/v0.1.0-preview.2)** · [Quick start](START-HERE.md) · [中文说明](README.zh-CN.md)
 
-## 作者的项目介绍与体验
+The portable ZIP includes the desktop application, native inference runtime, offline diagnostic decoder, local model importer, documentation and license notices. **NVIDIA weights, recovered model graphs, proprietary neural shaders and vendor DLLs are not included. A compatible model package that you are entitled to use must be imported before frame generation can run.** This is a compiled application package, not just source code; it is not a ready-to-run model bundle.
 
-以下按作者要求保留原文。画质和游戏体验属于作者在个人设备上的主观观察，不是独立画质评测、所有场景的无损保证或其他显卡的兼容性承诺。
+## Author's introduction and experience
 
-> 作为nvidia smooth motion的Intel优化版本，在B390核显上进行了优化，对其他Intel显卡测试未知，但是毫无疑问有XMX核心的XESS 3核心上肯定效果会较好，在地平线6等游戏上进行了测试两倍插帧，问题不大，画质相对于英伟达版本几乎无损，和LSFG 3.1对比，效果类似。相对于XESS MFG更加泛用，也可以对视频插帧（建议先开全屏），但是性能消耗和效果肯定还是不如能拿到引擎矢量单元的XESS-MFG，适合给视频，不支持xess的老游戏，minecraft等使用。本身其实是专门为panther lake移植的，针对B390核显进行了适配（我的测试版本号是：32.0.101.8274），但是理论上其实针对其他Intel显卡，也可以运行？（我没试过），模型使用vulkcan进行推理
+The following translates the author's project description, preserved verbatim on the [Chinese page](README.zh-CN.md). Quality comparisons are personal observations on the author's hardware, not independent measurements or guarantees for other devices.
+
+> This is an Intel-optimized version of NVIDIA Smooth Motion, developed and optimized on the B390 integrated GPU. Other Intel GPUs have not been tested, though I expect GPUs with XMX to be good candidates. I tested 2× frame generation in Forza Horizon 6 and found it generally usable. To my eyes, quality is nearly unchanged from the NVIDIA version and comparable to LSFG 3.1.
 >
-> 如果有有价值的问题，可以提出，说不定我会改进。可以选择导出诊断包，我来研究研究适配问题。
+> It is more broadly applicable than engine-integrated XeSS MFG and can also interpolate video; I recommend making the player fullscreen first. I expect it to be less efficient and effective than XeSS MFG when that has access to engine motion vectors. Intended uses include video, older games without XeSS support, and Minecraft.
+>
+> The port was originally made for Panther Lake and adapted to the B390 iGPU. My reported test driver is 32.0.101.8274. Other Intel GPUs may be able to run it, but I have not tried them. Model inference uses Vulkan.
+>
+> Reproducible, useful reports are welcome; I may improve the project. You can export a diagnostic bundle to help investigate compatibility issues.
 
-技术口径补充：
+Technical qualifications:
 
-- **XMX 是硬件矩阵单元；XeSS 3 是软件技术/SDK，不存在“XeSS 3 核心”。** 当前项目运行自定义 Vulkan 模型，不能凭支持 XeSS 或存在 XMX 就保证能运行当前着色器。
-- “Vulkcan”指 **Vulkan**。不同 Intel 架构与驱动的扩展、矩阵形状、数据类型、子组以及跨接口互操作支持需要逐项满足。
-- 文中的驱动 **32.0.101.8274** 是作者提供的测试版本说明；诊断包记录的当次驱动身份才用于具体故障对齐，不强制此版本，也不自动更换驱动。
-- “几乎无损”“与 LSFG 3.1 类似”是作者体验。运动、遮挡、细线、HUD、重复递归插帧与持续低功耗条件仍可能出现差异；仓库没有提供足以证明统一质量分数或普遍优于原版的评测。
-- 引擎集成式帧生成可获得运动矢量等信息；本项目的桌面捕获路径通常拿不到这些信息。与 XeSS MFG 的成本/画质对比需在同一设备与场景实测。
+- **XMX refers to hardware matrix units; XeSS 3 is a software technology/SDK, not a type of GPU core.** XeSS support or the presence of XMX alone does not establish compatibility with these Vulkan shaders.
+- The author's reported driver version is not mandatory. Diagnose a session using the actual device and driver identity in its logs. The application does not install or switch drivers.
+- “Nearly unchanged” and “comparable to LSFG 3.1” are subjective. Fast motion, occlusions, thin lines, HUDs, recursive interpolation and sustained power limits may expose differences. No universal quality score or superiority claim has been established.
+- Desktop capture normally lacks engine-provided motion vectors. Cost and quality comparisons with XeSS MFG require controlled measurements on the same hardware and scene.
 
-## 支持范围
+## Hardware support
 
-| 设备 | 状态 |
+| Device | Status |
 |---|---|
-| Intel Arc B390 / Panther Lake | 推荐；已有开发和《地平线 6》2×插帧测试经验 |
-| Intel Arc B580 / B570 等独显 | 不按型号封锁；按能力检查。没有这些实机，未验证可用性、性能或画质 |
-| 其他 Intel XMX GPU | 满足运行时及当前模型着色器要求时可尝试；未验证 |
-| AMD / NVIDIA / 没有相关矩阵能力的设备 | 不是当前优化和验证目标，不承诺支持 |
+| Intel Arc B390 / Panther Lake | Recommended; used for development and earlier Forza Horizon 6 2× testing |
+| Intel Arc B580 / B570 discrete GPUs | No model-ID block; actual capabilities are checked. Not physically tested |
+| Other Intel XMX GPUs | May be attempted if the runtime and shader requirements are satisfied; untested |
+| AMD, NVIDIA, or devices lacking the required matrix features | Not current optimization or validation targets; support is not promised |
 
-R995 移除了 B390 设备 ID 和固定队列族的专属门槛。运行时选择具备所需能力的 Intel adapter，D3D 和 Vulkan 必须对应同一 LUID；实际需求和拒绝原因会进入日志。不能通过忽略不支持的功能来冒充兼容。
+R995 removes the B390-only device-ID check and fixed queue-family assumptions. It selects an eligible Intel Vulkan adapter and binds D3D to the same actual LUID. Requirements and rejection reasons are logged.
 
-当前模型包还可能需要 **scalar FP8 转换相关扩展**，即使主要矩阵计算是 FP16。它不等于 FP8 矩阵推理。扩展缺失时需要兼容着色器实现；仅把设备名称改成 B580 不会解决这个问题。见 [硬件兼容说明](docs/COMPATIBILITY.zh-CN.md)。
+The current model package requires **scalar FP8 conversion support**, although its main matrix calculations are FP16. This is not FP8 matrix inference. Missing extensions require validated replacement shaders; changing the GPU name does not provide compatibility.
 
-## 快速开始
+See the [native capability contract](native/README-native995.md) and [Chinese compatibility guide](docs/COMPATIBILITY.zh-CN.md). A successful capability probe is not proof of successful allocation, inference or gaming performance.
 
-1. Windows 10/11 x64，使用已安装且提供所需 Vulkan 能力的 Intel 显卡驱动。本程序不安装驱动或修改系统配置。
-2. 下载 Release 的便携客户端，或按 [构建说明](docs/BUILD.zh-CN.md) 编译公开源码。
-3. 准备**你有权使用**且与当前清单匹配的本地模型包。按 [模型资产说明](docs/MODEL-ASSETS.zh-CN.md) 导入。仓库不会自动下载或提取厂商 DLL，不提供权重下载链接。
-4. 打开游戏，推荐窗口或无边框模式。启动 SmoothMotion.exe，选择捕获窗口，使用 **2×**、WGC 和跟随游戏叠层开始。
-5. 默认快捷键 **Ctrl+Alt+S** 开始/停止，**Ctrl+Alt+Esc** 紧急停止。切换到其他应用、最小化或退出目标游戏时会暂停/停止相应捕获工作。
-6. 出现持续花屏、设备丢失或系统响应变差时停止本程序并保留日志，不要关闭系统保护或反复强制测试。
+## Quick start
 
-**视频**：可选择播放器窗口，建议先让播放器全屏；DRM/受保护视频、最小化窗口以及部分播放/合成路径可能无法捕获。本项目不是离线视频转码器。
+1. Use Windows x86_64 (x64/AMD64), with an existing Intel graphics driver exposing the required Vulkan features. Windows 10/11 are the intended desktop platforms; individual capture/presentation features have additional requirements. The optional scheduled backend needs newer Windows APIs and rejects unsupported systems.
+2. Download **SmoothMotion-Intel-R995-Windows-x86_64.zip** from [Releases](https://github.com/jhckevin/smooth-motion-intel/releases/tag/v0.1.0-preview.2). Extract the entire ZIP to a writable directory. No compiler, Python or conda installation is needed to use this package.
+3. Import a compatible model package you are entitled to use. From the extracted directory, run:
 
-## 客户端功能
+~~~powershell
+.\tools\import-model.ps1 -Source "D:\MySmoothMotionModel" -Destination "."
+~~~
 
-- 2×帧生成；4×/8×为递归生成的实验模式，会增加真实推理次数、功耗和累积误差。
-- WGC 窗口捕获，以及受前台/显示器条件限制的 DXGI Desktop Duplication 实验路径。
-- 游戏窗口叠层、无边框全屏预览、1080p/等处理尺寸/小窗口预览。
-- 捕获尺寸、处理尺寸和显示尺寸独立标注。处理可保持原生，也可主动选择按比例的 1080p/1440p 上限。
-- 输入透传、游戏配置、快捷键、托盘及持续运行选项；独立预览不提供完整的跨位置绝对鼠标映射。
-- 监测原生/生成/展示帧、节奏和延迟；封装功耗与 GPU 驱动功耗域分别标注，传感器无法确认时显示不可用。
-- 默认启用可关联的本地诊断，安全停止后可导出诊断 ZIP。
+   Add -WhatIf to validate without copying. The source can be a previous client directory containing UserData/runtime-work and UserData/runtime-shaders, or a matching model directory. The importer checks file sizes and SHA256 against assets988.json; it does not download models or extract/execute vendor DLLs. See [model import details](docs/MODEL-ASSETS.en.md).
+4. Open your game, preferably windowed or borderless, then launch **SmoothMotion.exe**. Select the target window and begin with **2×**, **WGC** and the game-window overlay. The current client interface is Chinese; these bilingual pages do not change the application language.
+5. **Ctrl+Alt+S** starts/stops; **Ctrl+Alt+Esc** is the emergency stop. Switching away, minimizing or closing the target pauses/stops the relevant capture work.
+6. Stop and preserve logs if you see persistent corruption, device loss or severe responsiveness problems. Do not disable system protection or repeatedly stress a failing GPU.
 
-详细设置、已知限制与操作方式见 [使用手册](docs/USER-GUIDE.zh-CN.md)；本次验证范围见 [R995 验证记录](docs/VALIDATION-R995.md)。
+**Video:** select a player window and preferably make it fullscreen first. DRM-protected content, minimized windows and some composition paths may not be capturable. This is not an offline video transcoder.
 
-## 分辨率、延迟与性能
+## Client features
 
-“原生处理”不主动缩小外层输入/输出，不保证模型内部每层都使用全分辨率；当前模型内部包含固定 768×432 多尺度网格。更大输入仍会增加捕获、全分辨率 warp、纹理与合成成本。
+- Recommended **2×** generation; experimental **4×/8×** use recursive generation and add inference work, power use and accumulated error.
+- WGC window capture and experimental DXGI Desktop Duplication, subject to foreground/monitor constraints.
+- Game-window overlay, borderless fullscreen preview, processing-size/1080p/small-window preview options.
+- Separate capture, processing and output dimensions. Keep native processing or explicitly select proportional 1080p/1440p limits.
+- Input pass-through, game profiles, shortcuts, tray integration and continuous operation. Detached previews do not offer complete absolute-mouse remapping across positions.
+- Native/generated/displayed-frame monitoring, pacing and latency metrics. Package power and the GPU driver power domain are labeled separately; unverified sensors show unavailable.
+- Correlated local diagnostics and an exportable ZIP after capture stops safely.
 
-提交成功不代表实际显示。30→60 / 60→120 应以有效内容、实际展示节奏、基础帧、延迟和功耗共同判断。这里没有承诺在所有设备或 20 W/PL1 条件下达到稳定倍帧，也没有把 3 W / 6 W 目标写成已达成指标。选择更长时间线缓冲可能减少迟到，但会增加操作延迟。
+Detailed controls and limitations are in the [Chinese user guide](docs/USER-GUIDE.zh-CN.md). This release's validation scope is recorded in [R995 validation](docs/VALIDATION-R995.md).
 
-客户端可持续运行，尚不能把“没有固定测试超时”等同于已完成所有设备的 2–4 小时稳定性验收。
+## Resolution, latency and performance
 
-## 问题反馈与诊断
+Native processing does not intentionally downscale the outer input/output. It does not mean every internal layer uses full resolution: the current model includes a fixed 768×432 multiscale grid. Larger inputs still increase capture, full-resolution warp, texture and composition costs.
 
-有可复现、有价值的问题欢迎 [提交 Issue](https://github.com/jhckevin/smooth-motion-intel/issues)。请说明游戏/播放器、复现操作、大致时间、设备与驱动、捕获/处理/输出尺寸以及功耗/限帧条件。
+Successful submission is not the same as actual display. Evaluate 30→60 or 60→120 using effective content, displayed-frame pacing, base-frame performance, latency and power together. Stable doubling under every device or 20 W/PL1 condition is not promised; the 3 W and 6 W goals are not claimed as achieved. Longer timeline buffering may reduce lateness at the expense of input latency.
 
-安全停止后，进入 **设置 → 本地数据 → 导出诊断包**。记录包括错误原码、关键调用边界、会话/帧/任务/资源关联、设备能力与文件哈希。没有管理员权限要求，不自动上传，不默认保存画面或键鼠输入。请检查包内是否有不希望公开的游戏标题/路径；Issue 页面是公开的。
+Continuous operation is supported, but the absence of a fixed test timeout is not a 2–4-hour stability certification for every device.
 
-[诊断手册](docs/DIAGNOSTICS.zh-CN.md) · [字段格式](docs/DIAGNOSTIC994-SCHEMA.md) · [反馈模板](.github/ISSUE_TEMPLATE/bug_report.yml)
+## Diagnostics and feedback
 
-日志能缩小排查范围，但不能保证直接解释闭源驱动内核、硬件或突然掉电的根因。环覆盖、缺记录和未验证情况必须写进分析，不能把最后一个调用直接当成根因。维护者不承诺响应时间或一定修复。
+[Open an issue](https://github.com/jhckevin/smooth-motion-intel/issues) with the game/player, reproduction steps, approximate time, hardware/driver, capture/processing/output dimensions and power/frame-limit conditions.
 
-## 开源协议与免责声明
+After safely stopping, select **设置 → 本地数据 → 导出诊断包** (Settings → Local data → Export diagnostic bundle). Records include raw errors, call boundaries, session/frame/task/resource identifiers, capabilities and file hashes. Export does not require administrator rights and does not upload anything. Screenshots and keyboard/mouse input are not collected by default. Review game titles and paths before sharing a bundle in a public issue.
 
-项目原创代码使用 **Apache License 2.0**；适用边界与第三方信息见 [LICENSE](LICENSE)、[NOTICE](NOTICE) 和 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
+[Diagnostic guide (Chinese)](docs/DIAGNOSTICS.zh-CN.md) · [Record schema](docs/DIAGNOSTIC994-SCHEMA.md) · [Issue template](https://github.com/jhckevin/smooth-motion-intel/issues/new?template=bug_report.yml)
 
-**这个协议不授予 NVIDIA 或其他权利人的模型、权重、计算图、私有着色器、DLL、商标或专利的任何权利。** 移植和接口适配不改变其权利归属；免责声明不能替代权利人的授权。请自行确认持有资产的具体许可和适用规则；“已购买硬件/软件”不自动等于可以移植或再分发其全部内容。
+Logs narrow the investigation; they cannot guarantee a root cause inside a closed-source driver, hardware or sudden power failure. Missing records, ring overwrites and untested conditions must remain visible in the analysis. The last recorded call is not automatically the cause. Response times and fixes are not guaranteed.
 
-本项目与 NVIDIA、Intel、Lossless Scaling 及游戏厂商无隶属、赞助或认证关系。相关名称仅用于描述互操作目标和测试对象。自己的图标不是任何厂商的官方标志。
+## Source builds
 
-软件按原样提供，不对适销性、特定用途适用性、兼容性、稳定性或不侵权作出保证；责任限制以 LICENSE 和适用法律为准。它可能导致画面瑕疵、延迟、程序退出或数据丢失；请保留原程序及重要数据。本项目不保证符合任何游戏的反作弊规则。
+See [build instructions (Chinese)](docs/BUILD.zh-CN.md). Development requires Windows x64, Visual Studio C++ tools, the Windows SDK, .NET Framework/WPF and the pinned Vulkan-Headers dependency. Builds and CI do not fetch or bundle proprietary models.
 
-**开源的是本项目有权授权的实现，非 NVIDIA Smooth Motion 全部技术或资产。** 不将项目称为 NVIDIA 官方开源版，也不声称整个移植是经过法律确认的 clean-room 实现。
+The Windows release contains already-compiled executables. The separate source ZIP and GitHub's Source code downloads are intended for development, not normal installation.
+
+## License and disclaimer
+
+Project-authored code is licensed under **Apache License 2.0**. See [LICENSE](LICENSE), [NOTICE](NOTICE), [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and the [provenance review](docs/PROVENANCE.md).
+
+**That license does not grant rights to NVIDIA or other parties' models, weights, graphs, private shaders, DLLs, trademarks or patents.** Porting and interoperability work do not transfer ownership. A disclaimer is not redistribution permission; owning hardware or software does not automatically permit porting or redistributing all its contents.
+
+This project is not affiliated with, sponsored by or certified by NVIDIA, Intel, Lossless Scaling or game publishers. Names identify compatibility targets and references, not endorsement. The project logo is not a vendor's official mark.
+
+Software is provided as-is, without warranties of merchantability, fitness, compatibility, stability or non-infringement, subject to the license and applicable law. It may cause visual artifacts, latency, application exits or data loss. Keep backups of your original application and important data. Compatibility with game anti-cheat rules is not guaranteed.
+
+**The open-source release covers the implementation the project can license, not all NVIDIA Smooth Motion technology or assets.** It is not an official NVIDIA open-source release or a legally certified clean-room implementation.
