@@ -1,10 +1,19 @@
 ﻿[CmdletBinding(SupportsShouldProcess=$true)]
 param(
  [Parameter(Mandatory=$true)][string]$Source,
- [string]$Destination = (Join-Path $PSScriptRoot '..\dist'),
- [string]$ManifestPath = (Join-Path $PSScriptRoot '..\assets988.json')
+ [string]$Destination = '',
+ [string]$ManifestPath = ''
 )
 $ErrorActionPreference='Stop'
+$importerDirectory=$PSScriptRoot
+if([String]::IsNullOrWhiteSpace($importerDirectory)){$importerDirectory=[IO.Path]::GetDirectoryName($MyInvocation.MyCommand.Path)}
+if([String]::IsNullOrWhiteSpace($Destination)){$Destination=Join-Path $importerDirectory '..\dist'}
+if([String]::IsNullOrWhiteSpace($ManifestPath)){$ManifestPath=Join-Path $importerDirectory '..\assets988.json'}
+function File-Sha256([string]$Path) {
+ $stream=[IO.File]::OpenRead($Path);$sha=[Security.Cryptography.SHA256]::Create()
+ try {return [BitConverter]::ToString($sha.ComputeHash($stream)).Replace('-','').ToLowerInvariant()}
+ finally {$sha.Dispose();$stream.Dispose()}
+}
 function Assert-PlainPath([string]$Path) {
  $cursor=[IO.Path]::GetFullPath($Path)
  while($cursor) {
@@ -42,7 +51,7 @@ foreach($f in $plan){
  if($f.Size -lt 0 -or $f.Size -gt 64MB -or $f.Hash -notmatch '^[0-9a-fA-F]{64}$'){throw 'Invalid asset metadata'}
  $total+=$f.Size;if($total -gt 256MB){throw 'Asset package exceeds import budget'}
  if(-not(Test-Path -LiteralPath $f.From -PathType Leaf)){throw ('Missing asset: '+$f.Relative)}
- if((Get-Item -LiteralPath $f.From).Length -ne $f.Size -or (Get-FileHash -LiteralPath $f.From -Algorithm SHA256).Hash -ne $f.Hash){throw ('Asset verification failed: '+$f.Relative)}
+ if((Get-Item -LiteralPath $f.From).Length -ne $f.Size -or (File-Sha256 $f.From) -ne $f.Hash){throw ('Asset verification failed: '+$f.Relative)}
  $f.To=Child-Path $modelRoot $f.Relative
  if([StringComparer]::OrdinalIgnoreCase.Equals($f.To,$receiptPath) -or $f.To.StartsWith($receiptPath+'\',[StringComparison]::OrdinalIgnoreCase)){throw 'Asset path conflicts with reserved import receipt'}
  if(-not $destinations.Add($f.To)){throw ('Duplicate canonical asset destination: '+$f.Relative)}
@@ -54,10 +63,10 @@ if($PSCmdlet.ShouldProcess($destRoot,('Import '+$plan.Count+' verified local mod
   $temp=$f.To+'.importing-'+[Guid]::NewGuid().ToString('N')
   try {
    Copy-Item -LiteralPath $f.From -Destination $temp
-   if((Get-Item -LiteralPath $temp).Length -ne $f.Size -or (Get-FileHash -LiteralPath $temp -Algorithm SHA256).Hash -ne $f.Hash){throw 'Source changed during import'}
+   if((Get-Item -LiteralPath $temp).Length -ne $f.Size -or (File-Sha256 $temp) -ne $f.Hash){throw 'Source changed during import'}
    Move-Item -LiteralPath $temp -Destination $f.To -Force
   } finally {if(Test-Path -LiteralPath $temp){Remove-Item -LiteralPath $temp -Force}}
  }
- [ordered]@{complete=$true;files=$plan.Count;bytes=$total;manifest_sha256=(Get-FileHash -LiteralPath $ManifestPath -Algorithm SHA256).Hash;scope='Local import and integrity check; not an asset license grant'} | ConvertTo-Json | Set-Content -LiteralPath $receiptPath -Encoding UTF8
+ [ordered]@{complete=$true;files=$plan.Count;bytes=$total;manifest_sha256=(File-Sha256 $ManifestPath);scope='Local import and integrity check; not an asset license grant'} | ConvertTo-Json | Set-Content -LiteralPath $receiptPath -Encoding UTF8
 }
 Write-Output ("Verified {0} files ({1} bytes). No download, DLL execution or system changes." -f $plan.Count,$total)

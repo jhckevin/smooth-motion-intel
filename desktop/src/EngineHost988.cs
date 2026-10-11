@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -256,7 +256,7 @@ namespace SmoothMotionDesktop {
    var preset=EnginePreset988.Create(WorkDir,cache,Path.Combine(DataDir,"runtime-shaders"),WorkDir,p);
    preset["SMX_DIAGNOSTIC_SESSION994"]=id;preset["SMX_DIAGNOSTIC_DIR994"]=WorkDir;
    foreach(var kv in preset)psi.EnvironmentVariables[kv.Key]=kv.Value;
-   File.WriteAllText(Path.Combine(newSession,"launch.json"),new JavaScriptSerializer().Serialize(new{Revision="R995",EngineBaseline="R987",Software=Diagnostics994.SoftwareIdentity(Root),Settings=p,Environment=preset,StartedUtc=DateTime.UtcNow.ToString("o")}),Encoding.UTF8);
+   File.WriteAllText(Path.Combine(newSession,"launch.json"),new JavaScriptSerializer().Serialize(new{Revision="R996",EngineBaseline="R987",Software=Diagnostics994.SoftwareIdentity(Root),Settings=p,Environment=preset,StartedUtc=DateTime.UtcNow.ToString("o")}),Encoding.UTF8);
    CheckGeneration(generation);
    lock(stateGate){
     CheckGeneration(generation);

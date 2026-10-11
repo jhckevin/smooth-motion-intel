@@ -1,26 +1,26 @@
-# Local model assets
+# Converted model assets
 
 [English](MODEL-ASSETS.en.md) · [简体中文](MODEL-ASSETS.zh-CN.md)
 
-Neither the public repository nor the release ZIP includes NVIDIA/LSFG weights, recovered graphs, proprietary neural shader binaries or vendor DLLs. assets988.json contains file paths, sizes and SHA256 hashes, not the model or a license to it.
+The **Full Windows release** includes a converted Smooth Motion package matched to this engine. The source checkout and automatic GitHub Source code archives do not contain the model.
 
-## Import into the portable Windows release
+Included assets: weights/precomputed parameters, an exported computation graph, Intel Vulkan/XMX SPIR-V inference shaders, and synthetic validation inputs/reference results. The runtime reads these files, not the original NVIDIA Smooth Motion DLL.
 
-If you have a matching model package and the right to use it with this project, open PowerShell in the extracted application directory:
+No manual import is needed for the Full bundle. The original DLL, even with an RTX GPU and driver, is not a usable input to this importer.
+
+## Optional import for developers/replacement packages
+
+The importer validates sizes and SHA256 against assets988.json, then copies a **previously converted, matching package** to Destination/model. It does not download, extract, convert or execute a vendor DLL. It changes no driver, registry or global environment.
 
 ~~~powershell
-.\tools\import-model.ps1 -Source "D:\MySmoothMotionModel" -Destination "." -WhatIf
-.\tools\import-model.ps1 -Source "D:\MySmoothMotionModel" -Destination "."
+.\tools\import-model.ps1 -Source "D:\MyConvertedSmoothMotionModel" -Destination "." -WhatIf
+.\tools\import-model.ps1 -Source "D:\MyConvertedSmoothMotionModel" -Destination "."
 ~~~
 
-The first command checks without copying. Destination must be the directory containing SmoothMotion.exe. If working from a source checkout whose compiled application is in dist, use -Destination ".\dist" instead.
+Source may be a previous client root containing UserData/runtime-work and UserData/runtime-shaders, or a converted model root containing the manifest's graph922.bin, assets and shaders. For a source checkout's build output, use -Destination ".\dist".
 
-Source can point to a previous client root with UserData/runtime-work and UserData/runtime-shaders, or to a matching model root with graph922.bin, assets, shaders and the files in the manifest.
+Integrity checks do not establish rights. Read [the model notice](../MODEL-NOTICE.md). Third-party model assets are not licensed under the project's Apache-2.0 code license.
 
-The importer verifies size and SHA256 before copying to Destination/model. It rejects traversal, reparse paths, reserved receipt paths and duplicate destinations. It does not download, extract or run vendor DLLs, and does not change the registry, drivers or global environment. Missing or mismatched assets cause an explicit failure.
+## Capability contract
 
-Integrity checks are not proof of rights. Without a compatible model package, the public client cannot perform frame generation. This project does not provide a model mirror or automatic driver extractor.
-
-## Shader and device requirements
-
-A model package's compiled shaders have specific requirements. Some shaders in the current FP16 pipeline declare scalar float8 conversion. If the GPU/driver does not support them, validated compatible shaders are needed; bypassing the capability check is not a solution.
+Some current FP16-pipeline shaders require scalar float8 conversion. Other GPU/driver requirements remain applicable; bundling a model does not provide unsupported hardware features. Missing support requires validated compatible shaders, not bypassing checks.

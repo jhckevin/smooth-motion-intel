@@ -7,9 +7,11 @@
 
 An unofficial Smooth Motion port and Windows desktop client for Intel GPUs. It runs custom inference through Vulkan, captures with Windows Graphics Capture or DXGI Desktop Duplication, and presents through D3D/DXGI. It does not load NVIDIA models through the XeSS SDK and is not an official NVIDIA, Intel, or Lossless Scaling product.
 
-**[Download for Windows x86_64](https://github.com/jhckevin/smooth-motion-intel/releases/tag/v0.1.0-preview.2)** · [Quick start](START-HERE.md) · [中文说明](README.zh-CN.md)
+**[Download for Windows x86_64](https://github.com/jhckevin/smooth-motion-intel/releases/tag/v0.1.0-preview.3)** · [Quick start](START-HERE.md) · [中文说明](README.zh-CN.md)
 
-The portable ZIP includes the desktop application, native inference runtime, offline diagnostic decoder, local model importer, documentation and license notices. **NVIDIA weights, recovered model graphs, proprietary neural shaders and vendor DLLs are not included. A compatible model package that you are entitled to use must be imported before frame generation can run.** This is a compiled application package, not just source code; it is not a ready-to-run model bundle.
+The **Full** Windows ZIP includes the desktop application, native inference runtime, **the matched converted Smooth Motion model package**, offline diagnostic decoder, documentation and notices. No separate DLL extraction or manual model import is needed for this bundle.
+
+The bundled model consists of weights/precomputed parameters, an exported graph and Intel Vulkan/XMX SPIR-V shaders. It is **not the original NVIDIA DLL**. Model assets remain subject to third-party rights and are not relicensed under the source code's Apache-2.0 license. Read [the model notice](MODEL-NOTICE.md); normal first GUI launch requires acknowledging it. The maintainer provides the project without charge, but a disclaimer or non-profit distribution does not establish vendor permission.
 
 ## Author's introduction and experience
 
@@ -48,14 +50,10 @@ See the [native capability contract](native/README-native995.md) and [Chinese co
 ## Quick start
 
 1. Use Windows x86_64 (x64/AMD64), with an existing Intel graphics driver exposing the required Vulkan features. Windows 10/11 are the intended desktop platforms; individual capture/presentation features have additional requirements. The optional scheduled backend needs newer Windows APIs and rejects unsupported systems.
-2. Download **SmoothMotion-Intel-R995-Windows-x86_64.zip** from [Releases](https://github.com/jhckevin/smooth-motion-intel/releases/tag/v0.1.0-preview.2). Extract the entire ZIP to a writable directory. No compiler, Python or conda installation is needed to use this package.
-3. Import a compatible model package you are entitled to use. From the extracted directory, run:
+2. Download **SmoothMotion-Intel-R996-Windows-x86_64-Full.zip** from [Releases](https://github.com/jhckevin/smooth-motion-intel/releases/tag/v0.1.0-preview.3). Extract the entire ZIP to a writable directory. No compiler, Python or conda installation is needed to use this package.
+3. The **Full** ZIP already contains the compatible converted model in model/. Keep this directory with the application. Read MODEL-NOTICE.md and acknowledge the first-launch notice. Other devices still have to satisfy the capability checks.
 
-~~~powershell
-.\tools\import-model.ps1 -Source "D:\MySmoothMotionModel" -Destination "."
-~~~
-
-   Add -WhatIf to validate without copying. The source can be a previous client directory containing UserData/runtime-work and UserData/runtime-shaders, or a matching model directory. The importer checks file sizes and SHA256 against assets988.json; it does not download models or extract/execute vendor DLLs. See [model import details](docs/MODEL-ASSETS.en.md).
+   The optional importer is for developer/source-only installations or replacing a separately held compatible converted package. It verifies and copies files; it cannot extract/convert an original NVIDIA DLL. See [model asset details](docs/MODEL-ASSETS.en.md).
 4. Open your game, preferably windowed or borderless, then launch **SmoothMotion.exe**. Select the target window and begin with **2×**, **WGC** and the game-window overlay. The current client interface is Chinese; these bilingual pages do not change the application language.
 5. **Ctrl+Alt+S** starts/stops; **Ctrl+Alt+Esc** is the emergency stop. Switching away, minimizing or closing the target pauses/stops the relevant capture work.
 6. Stop and preserve logs if you see persistent corruption, device loss or severe responsiveness problems. Do not disable system protection or repeatedly stress a failing GPU.
@@ -72,7 +70,7 @@ See the [native capability contract](native/README-native995.md) and [Chinese co
 - Native/generated/displayed-frame monitoring, pacing and latency metrics. Package power and the GPU driver power domain are labeled separately; unverified sensors show unavailable.
 - Correlated local diagnostics and an exportable ZIP after capture stops safely.
 
-Detailed controls and limitations are in the [Chinese user guide](docs/USER-GUIDE.zh-CN.md). This release's validation scope is recorded in [R995 validation](docs/VALIDATION-R995.md).
+Detailed controls and limitations are in the [Chinese user guide](docs/USER-GUIDE.zh-CN.md). This release's validation scope is recorded in [R996 packaging validation](docs/VALIDATION-R996.md) · [earlier R995 validation](docs/VALIDATION-R995.md).
 
 ## Resolution, latency and performance
 

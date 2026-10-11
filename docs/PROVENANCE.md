@@ -6,7 +6,7 @@ Audit date: 2026-10-11. This is a bounded source/provenance review, not a claim 
 
 Apache License 2.0 may be applied to the project's own desktop, capture, presentation, synchronization, telemetry, and diagnostic implementation. Existing third-party notices and licenses remain applicable. The project license does not grant rights to NVIDIA or Lossless Scaling weights, recovered graphs, private shaders, driver DLLs, trademarks, or third-party patents.
 
-The reviewed source archive does not contain standalone model weights, SPIR-V files, or vendor DLLs. The runtime still requires a separately obtained compatible model package. Open source for this runtime does not make that model package open source.
+The reviewed source archive does not contain standalone model weights, SPIR-V files, or vendor DLLs. The runtime requires a compatible converted model; later Full binary releases bundle it separately. Open source for this runtime does not make that model package open source.
 
 The three embedded DXBC headers reviewed are ordinary capture/resize shaders. Corresponding HLSL and build commands were found for `capture_gpu_shader.h`, `window_normalize795_vs.h`, and `window_normalize795_ps.h`. They perform texture loading/sampling and geometry setup, not neural inference. Include that HLSL and portable rebuild instructions alongside the generated headers. The audit did not recompile them; matching source records and generated-file hashes are provenance evidence, not a reproducible-build claim.
 
@@ -14,9 +14,9 @@ The application icon is composed of six PNG members matching the project's softw
 
 ## Required exclusions
 
-`EXCLUDE-ASSETS.json` identifies every runtime model asset that must stay outside the public source and releases under the current plan: 227 files (194 SPIR-V, 32 BIN, one RGBA file), plus the two separately loaded native969 SPIR-V files. This includes `graph922.bin`, weights, precomputed parameters, captured/test image data, and compiled neural shaders. The JSON is an exclusion/identity list, not a rights grant.
+`EXCLUDE-ASSETS.json` identifies the converted runtime model assets excluded from the public source archive: 227 files (194 SPIR-V, 32 BIN, one RGBA file), plus the two separately loaded native969 SPIR-V files. This includes `graph922.bin`, weights, precomputed parameters, captured/test image data, and compiled neural shaders. The JSON is an exclusion/identity list, not a rights grant.
 
-Keep vendor DLLs, driver packages, extraction/rehosting tools, private runtime data, screenshots, logs and diagnostic dumps out of the source repository. `assets988.json` may remain as metadata; its existence and hashes do not establish rights to the referenced files.
+The later Full binary release bundles the converted model assets separately, under MODEL-NOTICE.md. This source audit establishes no third-party conversion or redistribution permission. Keep vendor DLLs, driver packages, extraction tools, private runtime data, screenshots, logs and diagnostic dumps out of the source repository. `assets988.json` may remain as metadata; its existence and hashes do not establish rights to the referenced files.
 
 Do not bundle the inspected LSFG-VK source tree or the separately inspected Smooth-Motion-for-RTX30 source snapshot under this project's Apache license. The latter snapshot has a license badge and disclaimer but no complete LICENSE/COPYING/NOTICE text; no sufficient standalone grant was established by this audit.
 

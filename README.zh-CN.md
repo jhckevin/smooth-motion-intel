@@ -6,13 +6,15 @@
 
 # Smooth Motion Intel
 
-**[下载 Windows x86_64 便携版](https://github.com/jhckevin/smooth-motion-intel/releases/tag/v0.1.0-preview.2)** · [快速开始](START-HERE.md)
+**[下载 Windows x86_64 便携版](https://github.com/jhckevin/smooth-motion-intel/releases/tag/v0.1.0-preview.3)** · [快速开始](START-HERE.md)
 
-包内提供已编译的客户端、原生引擎、诊断解码器、模型导入工具及完整文档；无需自行编译。**不包含模型资产，导入有权使用的兼容模型后才能插帧。**
+**Full 完整包**提供已编译客户端、原生引擎、**匹配的已转换 Smooth Motion 模型资产**、诊断工具及文档；无需自行编译、提取 DLL 或手动导入模型。首次正常启动需阅读并确认 [模型使用前声明](MODEL-NOTICE.md)。
+
+模型包包括权重与预计算参数、导出计算图、Intel Vulkan/XMX SPIR-V，以及合成启动验证数据。它不是 NVIDIA 原装 DLL。维护者免费提供；第三方模型权利不随项目原创代码的 Apache-2.0 许可转移，免责声明和非盈利发布不构成厂商授权。
 
 面向 Intel GPU 的非官方 Smooth Motion 移植与 Windows 客户端。通过 Vulkan 执行自定义推理，使用 Windows Graphics Capture / DXGI 捕获和 D3D/DXGI 展示。它不使用 XeSS SDK 加载 NVIDIA 模型，也不是 NVIDIA、Intel 或 Lossless Scaling 的官方产品。
 
-**公开范围：客户端、推理运行时及诊断实现。NVIDIA 模型权重、提取后的计算图、第三方私有着色器和厂商 DLL 不随仓库或 Release 分发。下载开源客户端并不等于取得这些资产的使用或再分发许可。**
+**源码仓库公开客户端、运行时和诊断实现；Full Release 另附与引擎匹配的转换模型包。模型资产不适用项目原创代码的 Apache-2.0 许可，相关权利仍属第三方，见模型使用前声明。**
 
 ## 作者的项目介绍与体验
 
@@ -47,7 +49,7 @@ R995 移除了 B390 设备 ID 和固定队列族的专属门槛。运行时选�
 
 1. Windows 10/11 x64，使用已安装且提供所需 Vulkan 能力的 Intel 显卡驱动。本程序不安装驱动或修改系统配置。
 2. 下载 Release 的便携客户端，或按 [构建说明](docs/BUILD.zh-CN.md) 编译公开源码。
-3. 准备**你有权使用**且与当前清单匹配的本地模型包。按 [模型资产说明](docs/MODEL-ASSETS.zh-CN.md) 导入。仓库不会自动下载或提取厂商 DLL，不提供权重下载链接。
+3. **Full 完整包已附带 model/ 目录**，请保持目录完整。阅读 MODEL-NOTICE.md，并在首次启动确认。仅源码/开发安装才需要额外导入与引擎匹配的已转换模型包；导入器不能自动提取或转换 NVIDIA 原装 DLL。见 [模型资产说明](docs/MODEL-ASSETS.zh-CN.md)。
 4. 打开游戏，推荐窗口或无边框模式。启动 SmoothMotion.exe，选择捕获窗口，使用 **2×**、WGC 和跟随游戏叠层开始。
 5. 默认快捷键 **Ctrl+Alt+S** 开始/停止，**Ctrl+Alt+Esc** 紧急停止。切换到其他应用、最小化或退出目标游戏时会暂停/停止相应捕获工作。
 6. 出现持续花屏、设备丢失或系统响应变差时停止本程序并保留日志，不要关闭系统保护或反复强制测试。
@@ -64,7 +66,7 @@ R995 移除了 B390 设备 ID 和固定队列族的专属门槛。运行时选�
 - 监测原生/生成/展示帧、节奏和延迟；封装功耗与 GPU 驱动功耗域分别标注，传感器无法确认时显示不可用。
 - 默认启用可关联的本地诊断，安全停止后可导出诊断 ZIP。
 
-详细设置、已知限制与操作方式见 [使用手册](docs/USER-GUIDE.zh-CN.md)；本次验证范围见 [R995 验证记录](docs/VALIDATION-R995.md)。
+详细设置、已知限制与操作方式见 [使用手册](docs/USER-GUIDE.zh-CN.md)；本次验证范围见 [R996 打包验证](docs/VALIDATION-R996.md) · [此前 R995 验证](docs/VALIDATION-R995.md)。
 
 ## 分辨率、延迟与性能
 

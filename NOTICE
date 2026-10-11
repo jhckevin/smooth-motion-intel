@@ -7,7 +7,7 @@ See THIRD_PARTY_NOTICES.md and docs/PROVENANCE.md.
 
 No license to NVIDIA or Lossless Scaling weights, recovered model graphs,
 private neural shaders, driver DLLs, trademarks or third-party patents is
-conferred. These assets are not included. A local import manifest is an
+conferred. The Full binary release includes a matched converted model package under\nseparate notices, with no new third-party rights granted. A local manifest is an
 integrity description, not permission to obtain or redistribute its targets.
 
 This is an independent interoperability project, not an official NVIDIA,

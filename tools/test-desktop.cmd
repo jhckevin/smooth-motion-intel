@@ -18,6 +18,10 @@ if errorlevel 1 goto fail
 if errorlevel 1 goto fail
 "%OUT%\EngineHostTests.exe"
 if errorlevel 1 goto fail
+"%CSC%" /nologo /target:exe /platform:x64 /optimize+ /out:"%OUT%\ModelNoticeTests.exe" /r:"%WPF%\PresentationFramework.dll" /r:"%WPF%\PresentationCore.dll" /r:"%WPF%\WindowsBase.dll" /r:System.Xaml.dll /r:System.Web.Extensions.dll src\ModelNotice996.cs tests\ModelNotice996Tests.cs
+if errorlevel 1 goto fail
+"%OUT%\ModelNoticeTests.exe" "%OUT%\model-notice-fixtures"
+if errorlevel 1 goto fail
 popd
 exit /b 0
 :fail
