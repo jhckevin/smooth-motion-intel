@@ -1,0 +1,15 @@
+Smooth Motion Intel
+Copyright 2026 Smooth Motion Intel contributors.
+
+This distribution licenses project-authored application and runtime code under
+the Apache License, Version 2.0. Existing per-file third-party licenses prevail.
+See THIRD_PARTY_NOTICES.md and docs/PROVENANCE.md.
+
+No license to NVIDIA or Lossless Scaling weights, recovered model graphs,
+private neural shaders, driver DLLs, trademarks or third-party patents is
+conferred. These assets are not included. A local import manifest is an
+integrity description, not permission to obtain or redistribute its targets.
+
+This is an independent interoperability project, not an official NVIDIA,
+Intel or Lossless Scaling product. Product names identify compatibility and
+references; they do not imply endorsement.

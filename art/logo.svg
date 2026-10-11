@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="300" viewBox="0 0 960 300" role="img" aria-labelledby="t d">
+<title id="t">Smooth Motion Intel</title><desc id="d">Layered frames connected by an interpolated diamond and motion line. Project logo, not a vendor logo.</desc>
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#192f42"/><stop offset="1" stop-color="#122025"/></linearGradient></defs>
+<rect x="1" y="1" width="958" height="298" rx="30" fill="#10171d" stroke="#304452" stroke-width="2"/>
+<rect x="38" y="42" width="216" height="216" rx="45" fill="url(#g)"/>
+<g transform="translate(57 62) scale(7.4)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+<path d="M5 7V4Q5 2 7 2H19Q21 2 21 4V16Q21 18 19 18H17" stroke="#8ea3b9" stroke-width="1.4"/>
+<path d="M2 10V8Q2 6 4 6H16Q18 6 18 8V20Q18 22 16 22H4Q2 22 2 20V17" stroke="#e7e9ec" stroke-width="1.45"/>
+<path d="M1 14H6M14 14H21M9.8 9.6L14.2 14L9.8 18.4L5.4 14Z" stroke="#8bdedc" stroke-width="1.6"/>
+<path d="M9.8 11.8V16.2M7.6 14H12" stroke="#e7e9ec" stroke-width="1.25"/>
+<circle cx="21.25" cy="14" r="1.25" fill="#8bdedc" stroke="none"/>
+</g>
+<text x="300" y="133" font-family="Segoe UI,Inter,Arial,sans-serif" font-weight="650" font-size="54" fill="#f3f6f8">Smooth Motion</text>
+<text x="303" y="184" font-family="Segoe UI,Inter,Arial,sans-serif" font-size="31" fill="#8bdedc" letter-spacing="5">INTEL · VULKAN · XMX</text>
+<text x="304" y="229" font-family="Segoe UI,Arial,sans-serif" font-size="19" fill="#9cafbd">Frame generation for Windows</text>
+</svg>

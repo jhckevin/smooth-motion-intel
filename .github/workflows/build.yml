@@ -1,0 +1,33 @@
+name: Build and CPU checks
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  windows:
+    runs-on: windows-2022
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Pinned Vulkan headers
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: KhronosGroup/Vulkan-Headers
+          ref: b5c8f996196ba4aa6d8f97e52b5d3b6e70f7e4e2
+          path: deps/Vulkan-Headers
+      - name: Build without proprietary model assets
+        shell: cmd
+        run: |
+          set "VULKAN_HEADERS=%GITHUB_WORKSPACE%\deps\Vulkan-Headers\include"
+          call build.cmd
+      - name: Desktop CPU checks
+        shell: cmd
+        run: call tools\test-desktop.cmd
+      - name: Model importer tests
+        shell: powershell
+        run: .\tools\test-import-model.ps1
+      - name: Native CPU checks
+        shell: powershell
+        run: .\tools\test-native.ps1

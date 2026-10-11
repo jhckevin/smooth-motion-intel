@@ -1,0 +1,41 @@
+name: 缺陷或兼容性问题
+description: 提供可复现操作和诊断证据；不要上传模型权重或未经检查的私人数据。
+title: "[Bug] "
+body:
+  - type: input
+    id: version
+    attributes:
+      label: 客户端版本或提交
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: 环境
+      description: GPU、驱动版本、Windows、游戏/播放器、窗口模式及是否多显卡。
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: 复现步骤、预期和实际现象
+      description: 包含大致故障时间，是否切换前台、尺寸或输出模式。
+    validations:
+      required: true
+  - type: textarea
+    id: configuration
+    attributes:
+      label: 运行配置
+      description: 捕获/处理/输出尺寸，倍率、API、显示队列、缓冲、游戏限帧与功耗条件。
+  - type: textarea
+    id: evidence
+    attributes:
+      label: 诊断包或相关证据
+      description: 安全停止后在设置导出。公开上传前检查隐私；不要上传权重、厂商DLL、完整内存或含私人信息的截图。
+  - type: checkboxes
+    id: confirmation
+    attributes:
+      label: 证据范围
+      options:
+        - label: 我区分了游戏原生FPS、应用提交FPS和实际展示FPS，没有仅凭提交计数声称倍帧成功。
+        - label: 我已检查附件中的私人信息，且未附带模型权重或厂商DLL。

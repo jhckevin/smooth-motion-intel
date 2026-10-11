@@ -1,0 +1,47 @@
+{
+  "pass_all": true,
+  "gpu_used": false,
+  "results": [
+    {
+      "flag": "--diagnostics-selftest994",
+      "exit": 0
+    },
+    {
+      "flag": "--diagnostic-integration-selftest994",
+      "exit": 0
+    },
+    {
+      "flag": "--output-geometry-selftest993",
+      "exit": 0
+    },
+    {
+      "flag": "--telemetry-lifetime-selftest993",
+      "exit": 0
+    },
+    {
+      "flag": "--foreground-wait-selftest992",
+      "exit": 0
+    },
+    {
+      "flag": "--window-state-selftest990",
+      "exit": 0
+    },
+    {
+      "flag": "--capture-contract-selftest",
+      "exit": 0
+    },
+    {
+      "flag": "--host-selftest",
+      "exit": 0
+    },
+    {
+      "flag": "--hud-selftest",
+      "exit": 0
+    },
+    {
+      "flag": "capability995-test.exe (standalone; no engine flag)",
+      "exit": 0
+    }
+  ],
+  "exe_sha256": "6866c341cd0fbeae36a45774dbb30248d221023696c3b76c9e0db1a367c93699"
+}

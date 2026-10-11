@@ -1,0 +1,23 @@
+[
+  {
+    "path": "optimization-20261002/build/capture_gpu_shader.h",
+    "identical": true,
+    "bytes": 1112,
+    "original_sha256": "061a930744a596d44043b28d8b758e166d9d8acf0df7ce00d9a1d280712866ca",
+    "rebuilt_sha256": "061a930744a596d44043b28d8b758e166d9d8acf0df7ce00d9a1d280712866ca"
+  },
+  {
+    "path": "intrinsic-20261006/fp16-next537/candidate994/scaling992/window_normalize795_ps.h",
+    "identical": true,
+    "bytes": 1008,
+    "original_sha256": "40a3afec2fa9643f4b8d7145af3793849891c40e8a317c1c78725182e1edffd0",
+    "rebuilt_sha256": "40a3afec2fa9643f4b8d7145af3793849891c40e8a317c1c78725182e1edffd0"
+  },
+  {
+    "path": "intrinsic-20261006/fp16-next537/candidate994/scaling992/window_normalize795_vs.h",
+    "identical": true,
+    "bytes": 736,
+    "original_sha256": "8f92a3766884d2f0a6aa2031941ecad8a6ba34102446881afd789f8dba498d8d",
+    "rebuilt_sha256": "8f92a3766884d2f0a6aa2031941ecad8a6ba34102446881afd789f8dba498d8d"
+  }
+]

@@ -1,0 +1,10 @@
+[
+  {
+    "exe": "SmoothMotion-Engine.exe",
+    "pdb_reference": "SmoothMotion-Engine.pdb"
+  },
+  {
+    "exe": "diag-export994.exe",
+    "pdb_reference": "diag-export994.pdb"
+  }
+]
